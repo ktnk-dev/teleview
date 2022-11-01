@@ -35,11 +35,13 @@ def get(name, id=0):
         if posts == []: return {'status':None, 'text':'Channel not found'}
 
         # возвращается информация об одном посте
+        
         data = { 'status':posts[0]['status'] }
-        if not data['status']: data['text'] = data['posts'][0]['text']
+        if not data['status']: data['text'] = posts[0]['text']
         else: 
-            data['name'] = posts[0]['name']
+            data['name'] = posts[0]['name']             
             data['posts'] = posts
+
 
         return data
 
