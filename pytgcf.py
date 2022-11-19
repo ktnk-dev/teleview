@@ -16,7 +16,8 @@ class get():
         self.channel_short = name 
         self.url = 'https://t.me/'+name
         self.name = info.find(class_='tgme_channel_info_header_title').text # название
-        self.description = info.find(class_='tgme_channel_info_description').text # описание 
+        try: self.description = info.find(class_='tgme_channel_info_description').text # описание 
+        except: self.description = None
         subs_str = info.find(class_='tgme_channel_info_counter').find(class_='counter_value').text.replace('.','') # получение кол-ва подписчиков
         if 'K' in subs_str: self.subscribers = int(float(subs_str[:-1])*1000) # конвертация в int 
         elif 'M' in subs_str: self.subscribers = int(float(subs_str[:-1])*1000*1000)
@@ -55,10 +56,12 @@ class get():
                 if single: self.datetime = post.find(class_='datetime').get('datetime')  # получаем время (для single)
                 else: self.datetime = post.find(class_='time').get('datetime')           # -> (не для одиночных постов)
                 
-                views = post.find(class_='tgme_widget_message_views').text            # получение кол-ва просмотров
-                if 'K' in views: self.views = int(float(views[:-1])*1000)        # конвертация в int 
-                elif 'M' in views: self.views = int(float(views[:-1])*1000*1000)
-                else: self.views = int(views)
+                try:
+                    views = post.find(class_='tgme_widget_message_views').text            # получение кол-ва просмотров
+                    if 'K' in views: self.views = int(float(views[:-1])*1000)        # конвертация в int 
+                    elif 'M' in views: self.views = int(float(views[:-1])*1000*1000)
+                    else: self.views = int(views)
+                except: self.views = 0 # если еще нет просмотров
                 
                 photos = post.findAll(class_='tgme_widget_message_photo_wrap')  # пробуем получить фотки
                 if photos:                                                      # -> если они есть, то добовляем каждую фотку в список
@@ -75,6 +78,7 @@ class get():
                 web = requests.get(url, headers={"User-Agent":"1"}) # реквест
                 bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
                 comments = bs.findAll(class_='tgme_widget_message') # поиск <div> элементов комментария
+                if comment_id and bs.find(class_='tgme_widget_message_error'): return None # если айди такого поста нет то вернет None
                 if comments:
                     result = []
                     class commentdata():    
