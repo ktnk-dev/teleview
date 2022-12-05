@@ -1,5 +1,5 @@
 import bs4, requests
-version = 0.4
+version = 0.5
 source = 'https://github.com/ktnk-dev/py-tg-channel-fetcher'
 
 class get():
