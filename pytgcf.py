@@ -8,11 +8,10 @@ class get():
         web = requests.get(url, headers={"User-Agent":"1"}) # реквест
         bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
         info = bs.find(class_='tgme_channel_info') # <div> с информацией о канале
-        if not info: # если канала нет, то возвращается ошибка
-            self.status = None 
-            self.text = 'Channel not found'
+        if not info: 
+            self.status = None # если канала нет, то возвращается None
             return
-        else: self.status = True 
+        self.status = True
         self.channel_short = name 
         self.url = 'https://t.me/'+name
         self.name = info.find(class_='tgme_channel_info_header_title').text # название
@@ -27,23 +26,11 @@ class get():
         self.latests = [self.post(0,bs=post) for post in bs.findAll(class_='tgme_widget_message')] # получение последних 20 постов (не ну а че, реквест уже сделан)
 
     def post(self, id, bs=None):
+        if not self.status: return None
         name = self.channel_short  
         class postdata():
             def __init__(self, post, single = True, channel_short = ''):
-                def error(self, text): # сделано по приколу, что-бы не писать одно и то же несколько раз, если вдруг будут ошибки
-                    self.status = None
-                    self.text = text
-                    return
-
-                try: return error(self, post['text']) # тоже самое что и выше                        
-                except:...
-
-                self.channel_short = channel_short
-
-                try: post.find(class_='tgme_widget_message_owner_name').text  # пробуем получить название канала
-                except: return error(self, 'Post not found')                # -> если не вышло, значит поста вообще нет, возвращаем ошибку
-                
-                self.status = True  # раз мы успешно получили название, то ставим статус Тру, означающий, что ошибки нет
+                self.channel_short = channel_short                
                 
                 if single: self.url = 'https://'+post.find(class_='tgme_widget_message_link').text  # получаем сссылку на пост (если single пост)
                 else: self.url = 'https://t.me/'+post.get('data-post')                   # -> если не single
@@ -71,14 +58,14 @@ class get():
                 else: self.media = None
 
   
-            def comments(self,comment_id=None,limit=10): 
+            def comments(self,id=None,limit=10): 
                 name = self.channel_short
-                id = self.id
-                url = f'https://t.me/{name}/{id}?embed=1&discussion=1&comments_limit={limit}' if not comment_id else f'https://t.me/{name}/{id}?comment={comment_id}&embed=1'# используется прямая ссылка на embed версию "дискуссии" или определенного сообщения
+                ids = self.id
+                url = f'https://t.me/{name}/{ids}?embed=1&discussion=1&comments_limit={limit}' if not id else f'https://t.me/{name}/{ids}?comment={id}&embed=1'# используется прямая ссылка на embed версию "дискуссии" или определенного сообщения
                 web = requests.get(url, headers={"User-Agent":"1"}) # реквест
                 bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
+                if id and bs.find(class_='tgme_widget_message_error') or bs.find(class_='tme_no_messages_found'): return None # если айди такого поста нет то вернет None
                 comments = bs.findAll(class_='tgme_widget_message') # поиск <div> элементов комментария
-                if comment_id and bs.find(class_='tgme_widget_message_error'): return None # если айди такого поста нет то вернет None
                 if comments:
                     result = []
                     class commentdata():    
@@ -104,7 +91,8 @@ class get():
 
                             self.datetime = msg.find(class_='tgme_widget_message_date').find('time').get('datetime')    # дата и время отправки сообщения
                     
-                    for comment in comments: result.append(commentdata(comment, comment_id))
+                    for comment in comments: result.append(commentdata(comment, id))
+                    if len(result) == 1: return result[0]
                     return result 
                 else: return None   # если коментов вообще нет
 
@@ -115,8 +103,10 @@ class get():
             web = requests.get(url, headers={"User-Agent":"1"}) # реквест
             bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
             post = bs.find(class_='tgme_widget_message') # поиск <div> элемента поста
-            if post: return postdata(post, channel_short=name) # возвращается информация об одном посте
-            else: return postdata({'status':None, 'text':'Channel not found'}) 
-
+            try: 
+                post.find(class_='tgme_widget_message_owner_name').text  # пробуем получить название канала
+                return postdata(post, channel_short=name)
+            except: return None               # -> если не вышло, значит поста вообще нет, возвращаем None
+            
         elif 0 > id > -21: return self.latests[id]  # если юзер хочет получить одно из последних id:[-1..-20]; возвращаем элемент из latest[id]
-        else: return postdata({'status':None, 'text':'ID allowed only [-1..-20] and [1..x]'})
+        else: return None
