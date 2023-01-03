@@ -24,7 +24,23 @@ class get():
         try: self.picture = info.find(class_='tgme_page_photo_image').find('img').get('src') # фото канала
         except: self.picture = None
         self.latests = [self.post(0,bs=post) for post in bs.findAll(class_='tgme_widget_message')] # получение последних 20 постов (не ну а че, реквест уже сделан)
+    
+    def __bool__(self): return False if self.status == None else True
+    def __call__(self): return None if self.status == None else True
+     
+    def chunk(self, id=0, full=False):
+        id = id if id != 0 else self.latests[0].id 
+        url = f'https://t.me/s/{self.channel_short}/{id}'  # ссылка на веб-версию тг с этим каналом
+        web = requests.get(url, headers={"User-Agent":"1"}) # реквест
+        bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
+        fulldata = [self.post(0,bs=post) for post in bs.findAll(class_='tgme_widget_message')]
+        loaded_posts = [latest.id for latest in self.latests]
+        data = [post for post in fulldata if post.id not in loaded_posts and post.id != id]
+        self.latests = data + self.latests if id == self.latests[0].id and not full else ...
+        
 
+        return data if not full else fulldata
+    
     def post(self, id, bs=None):
         if not self.status: return None
         name = self.channel_short  
@@ -56,7 +72,10 @@ class get():
                     for photo in photos:                                        # -> получаем ссылку из background-image в style свойстве <div> элементов картинки 
                         self.media.append(photo.get('style').split("background-image:url('")[1].split("')")[0])   
                 else: self.media = None
-
+                urlprev = post.findAll(class_='link_preview_image')
+                if urlprev and not photos: self.media = [urlprev[0].get('style').split("background-image:url('")[1].split("')")[0]]
+                    
+                    
   
             def comments(self,id=None,limit=10): 
                 name = self.channel_short
@@ -108,5 +127,5 @@ class get():
                 return postdata(post, channel_short=name)
             except: return None               # -> если не вышло, значит поста вообще нет, возвращаем None
             
-        elif 0 > id > -21: return self.latests[id]  # если юзер хочет получить одно из последних id:[-1..-20]; возвращаем элемент из latest[id]
+        elif 0 > id: return self.latests[id]  # если юзер хочет получить одно из последних id:[-1..-20]; возвращаем элемент из latest[id]
         else: return None
