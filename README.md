@@ -6,56 +6,21 @@
 - Тесты: `15` из `15` успешно
 
 # Какую информацию получает скрипт с канала
-- `pytgcf.get(channel_short_name)` → *class* <br>
+- `pytgcf.get(channel_short_name)` → [*class*](./REF.md#class) <br>
 Выдает класс с информацией о посте (для удобства в дальнейшем будет использоваться как `channel`)
-```py
-self.status = True # статус
-self.url = <class 'str'> # ссылка на канал
-self.name = <class 'str'> # название канала
-self.description = <class 'str'> # описание канала
-self.subscribers = <class 'int'> # кол-во подписчиков
-self.picture = <class 'str'> # ссылка на аватарку канала
-self.latests = <class 'list'> # последние 20 постов в канале
-self.post(id) # функция для получения определенных постов
-```
-Если канала нет, то выдает 
-```py
-self.status = None
-``` 
-или 
-```py
-channel = pytgcf.get('123')
-channel # -> None или False
-```
+
 <hr></hr>
 
-- `channel.post(id)` → *class Post* <br>
+- `channel.post(id)` → [*class Post*](./REF.md#class-post) <br>
 P.S: В `channel.latests` уже находится 20 актуальных постов
-```py
-self.text = <class 'str'>, # текст в этом посте, если текста нет, то возвращает None. 
-self.id = <class 'int'>, # ID поста
-self.url = <class 'str'>, # ссылка на пост
-self.media = <class 'list'>, # список ссылок на прикрепленные фотографии. принимает None если фотографий нет
-self.datetime = <class 'str'> # строка, в которой написана дата и время публикации. пользователь сам может конвертировать его в <class 'datetime.datetime'> при необходимости.
-self.comments(limit=10) # функция для получения комментариев из поста
-```
+
 *Если будет произведена попытка поиска несуществуюшего поста - функция вернет None*
-- `channel.chunk()` → *list*  (состоящий из *class Post*) <br>
+- `channel.chunk()` → *list*  (состоящий из [*class Post*](./REF.md#class-post)) <br>
 Данная функция вернет еще 10(на деле может быть меньше, учитывайте это) актуальных постов, а так же сама добавит их в `channel.latests` в верной последовательности
 <hr></hr>
 
-- `Post.comments(id)` → *class Comment*
-- `Post.comments(limit=10)` → *list* (состоящий из *class Comment*)
-```py
-self.id = <class 'int'> # айди комментария
-self.reply = <class 'int'> # если этот комментарий написан в ответ на другой, то здесь будет id исходного комментария. иначе этого аргумента не существует
-self.url = <class 'str'> # ссылка на комментарий
-self.author.name = <class 'str'> # имя пользователя, написавший комментарий
-self.author.username = <class 'str'> # username этого пользователя
-self.author.photo = <class 'str'> # ссылка на фото профиля этого пользователя
-self.text = <class 'str'> # текст комментария
-self.datetime = <class 'str'> # дата отправки комментария, при необходимости пользователь сам может перевести его в <class 'datetime.datetime'>
-```
+- `Post.comments(id)` → [*class Comment*](./REF.md#class-comment)
+- `Post.comments(limit=10)` → *list* (состоящий из [*class Comment*](./REF.md#class-comment))
 *Если будет произведена попытка поиска несуществуюшего комментария - функция вернет None*
 
 # Как этим пользоваться 
