@@ -80,7 +80,7 @@ comment = comments[-1] # это самый актуальный коммента
 comment.author.name # -> имя автора комментария
 comment.text        # -> текст комментария 
 
-comments = post.comments(id=141108) # мы получаем определенный пост (не список!)
+comment = post.comments(id=141108) # мы получаем определенный пост (не список!)
 comment.author.name # -> Deleted Account 
 comment.text        # -> Im Rassia......
 
