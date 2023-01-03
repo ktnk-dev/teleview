@@ -14,10 +14,11 @@
 Все запросы отправляются как `GET`. Весь ответ приходит ввиде `application/json`. Все данные возвращаются как и в библеотеке за исключением `chunk`
 {} - обязательно, () - необязательно
 <br>
-- `/{CHANNEL_SHORT_NAME}/` → *class*
-- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}` → *class Post*
-- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}/comments/(LIMIT)` → *list* состоящий из *class Comment*
-- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}/comment/{COMMENT_ID}` → *class Comment*
-- `/{CHANNEL_SHORT_NAME}/chunk/{LAST_LOADED_POST_ID}` → *list* состоящий из *class Post*<br> 
+
+- `/{CHANNEL_SHORT_NAME}/` → [*class*](./REF.md#class)
+- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}` → [*class Post*](./REF.md#class-post)
+- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}/comments/(LIMIT)` → *list* состоящий из [*class Comment*](./REF.md#class-comment)
+- `/{CHANNEL_SHORT_NAME}/post/{POST_ID}/comment/{COMMENT_ID}` → [*class Comment*](./REF.md#class-comment)
+- `/{CHANNEL_SHORT_NAME}/chunk/{LAST_LOADED_POST_ID}` → *list* состоящий из [*class Post*](./REF.md#class-post)<br> 
 Прошу обратить внимание, что в данном случае запрос вернет **ВСЕ** посты, находящиеся возле поста с id `LAST_LOADED_POST_ID`, вам надо **самостоятельно** написать фильтрацию получаемых данных, если это необходимо<br>
 Правильное использование: `LAST_LOADED_POST_ID` = `channel.latests[0].id` с последующим добавлением в `channel.latests` только тех постов, которых нет. добавлять полученные данные в **начало** списка (`chunk_data` + `channel.latests`) 
