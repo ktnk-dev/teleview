@@ -111,7 +111,8 @@ class get():
                             self.datetime = msg.find(class_='tgme_widget_message_date').find('time').get('datetime')    # дата и время отправки сообщения
                     
                     for comment in comments: result.append(Comment(comment, id))
-                    if len(result) == 1: return result[0]
+                    if len(result) == 1: 
+                        if id: return result[0]
                     return result 
                 else: return None   # если коментов вообще нет
 
