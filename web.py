@@ -4,7 +4,7 @@ import time, json, pytgcf
 
 hostName = ''
 serverPort = 9191
-api_path = ''
+api_path = '' #например 'pytgcf': /pytgcf/...
 
 class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -25,7 +25,7 @@ class MyServer(BaseHTTPRequestHandler):
         
         if len(query) == 4:
             channel = pytgcf.get(query[1])
-            if query[2] == 'chunk': result = [post.__dict__ for post in channel.chunk(int(query[3]))]
+            if query[2] == 'chunk': result = [post.__dict__ for post in channel.chunk(int(query[3]), True)]
             if query[2] == 'post': result = channel.post(int(query[3])).__dict__
             data = json.dumps(result, ensure_ascii=False).encode('utf-8')
             self.wfile.write(data)
