@@ -1,5 +1,5 @@
 import bs4, requests
-version = 0.5
+version = 0.6
 source = 'https://github.com/ktnk-dev/py-tg-channel-fetcher'
 
 class get():
@@ -44,7 +44,7 @@ class get():
     def post(self, id, bs=None):
         if not self.status: return None
         name = self.channel_short  
-        class postdata():
+        class Post():
             def __init__(self, post, single = True, channel_short = ''):
                 self.channel_short = channel_short                
                 
@@ -87,17 +87,17 @@ class get():
                 comments = bs.findAll(class_='tgme_widget_message') # поиск <div> элементов комментария
                 if comments:
                     result = []
-                    class commentdata():    
+                    class Comment():    
                         def __init__(self,msg, single=None):
                             self.id = int(msg.get('data-post-id')) # получаем айди поста, чтобы записать его как ключ в result (result[id])
-                            class userdata():   # класс, чтобы просто создать атрибут user и в него пихнуть присущие ему данные
+                            class CommentAuthor():   # класс, чтобы просто создать атрибут user и в него пихнуть присущие ему данные
                                 def __init__(self,msg):
                                     try:self.username = msg.find(class_='tgme_widget_message_user').find('a').get('href').split('/')[-1] # находим ссылку на аккаунт и достаем от туда username
                                     except: self.username = None                                                                         # -> если у юзера нету username, то пишем None
                                     self.name = msg.find(class_='tgme_widget_message_author_name').text # достаем имя пользователя
                                     try:self.photo = msg.find(class_='tgme_widget_message_user_photo').find('a').find('i').find('img').get('src') # достаем ссылку на картинку
                                     except: self.photo = None                                                                                     # -> если картинки нет, то пишем None
-                            self.author = userdata(msg)   
+                            self.author = CommentAuthor(msg)   
 
                             try:  # если сообщение является ответом на другое, то пишем айди исходного сообщения сюда. пригодится для result[reply] который вернет готовый исходный пост
                                 if single: self.reply = int(msg.find(class_='tgme_widget_message_reply').get('href').split('/')[-1])
@@ -110,13 +110,13 @@ class get():
 
                             self.datetime = msg.find(class_='tgme_widget_message_date').find('time').get('datetime')    # дата и время отправки сообщения
                     
-                    for comment in comments: result.append(commentdata(comment, id))
+                    for comment in comments: result.append(Comment(comment, id))
                     if len(result) == 1: return result[0]
                     return result 
                 else: return None   # если коментов вообще нет
 
                 
-        if bs: return postdata(bs, False, name) # загрузка из готового bs4 обьекта, сгенерированный при первом вызове класса
+        if bs: return Post(bs, False, name) # загрузка из готового bs4 обьекта, сгенерированный при первом вызове класса
         elif id > 0: # если юзер выдал определенный айди поста [1..x]
             url = f'https://t.me/{name}/{id}?embed=1'   # используется прямая ссылка на embed версию поста. она грузится быстро очень, нежели искать по всему каналу
             web = requests.get(url, headers={"User-Agent":"1"}) # реквест
@@ -124,7 +124,7 @@ class get():
             post = bs.find(class_='tgme_widget_message') # поиск <div> элемента поста
             try: 
                 post.find(class_='tgme_widget_message_owner_name').text  # пробуем получить название канала
-                return postdata(post, channel_short=name)
+                return Post(post, channel_short=name)
             except: return None               # -> если не вышло, значит поста вообще нет, возвращаем None
             
         elif 0 > id: return self.latests[id]  # если юзер хочет получить одно из последних id:[-1..-20]; возвращаем элемент из latest[id]
