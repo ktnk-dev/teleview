@@ -12,15 +12,15 @@
 <hr></hr>
 
 - `channel.post(id)` → [*class Post*](./REF.md#class-post) <br>
-P.S: В `channel.latests` уже находится 20 актуальных постов
-
+P.S: В `channel.latests` уже находится 20 актуальных постов <br>
 *Если будет произведена попытка поиска несуществуюшего поста - функция вернет None*
+
 - `channel.chunk()` → *list*  (состоящий из [*class Post*](./REF.md#class-post)) <br>
 Данная функция вернет еще 10(на деле может быть меньше, учитывайте это) актуальных постов, а так же сама добавит их в `channel.latests` в верной последовательности
 <hr></hr>
 
 - `Post.comments(id)` → [*class Comment*](./REF.md#class-comment)
-- `Post.comments(limit=10)` → *list* (состоящий из [*class Comment*](./REF.md#class-comment))
+- `Post.comments(limit=10)` → *list* (состоящий из [*class Comment*](./REF.md#class-comment)) <br>
 *Если будет произведена попытка поиска несуществуюшего комментария - функция вернет None*
 
 # Как этим пользоваться 
