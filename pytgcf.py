@@ -1,5 +1,5 @@
 import bs4, requests
-version = 0.6
+version = 1.0
 source = 'https://github.com/ktnk-dev/py-tg-channel-fetcher'
 
 class get():
@@ -55,7 +55,7 @@ class get():
                 
                 try: self.text = bs4.BeautifulSoup(str(post.find(class_='tgme_widget_message_text')).replace('<br/>','\n'), 'html.parser').text # получаем текст сообщения, форматируя <br/> в \n
                 except AttributeError: self.text = None                                                                                        # -> если ловим ошибку значит текста нет
-                
+                if self.text == '': self.text = None
                 if single: self.datetime = post.find(class_='datetime').get('datetime')  # получаем время (для single)
                 else: self.datetime = post.find(class_='time').get('datetime')           # -> (не для одиночных постов)
                 
@@ -67,14 +67,31 @@ class get():
                 except: self.views = 0 # если еще нет просмотров
                 
                 photos = post.findAll(class_='tgme_widget_message_photo_wrap')  # пробуем получить фотки
-                if photos:                                                      # -> если они есть, то добовляем каждую фотку в список
+                videos = post.findAll(class_='tgme_widget_message_video')
+                self.media_type = None
+                if photos or videos:    # -> если они есть, то добовляем каждую фотку в список
                     self.media = []
-                    for photo in photos:                                        # -> получаем ссылку из background-image в style свойстве <div> элементов картинки 
+                    self.media_type = 'media'
+                    for photo in photos:                                        
                         self.media.append(photo.get('style').split("background-image:url('")[1].split("')")[0])   
+                    for video in videos:
+                        self.media.append(video.get('src'))
                 else: self.media = None
+                
                 urlprev = post.findAll(class_='link_preview_image')
-                if urlprev and not photos: self.media = [urlprev[0].get('style').split("background-image:url('")[1].split("')")[0]]
+                if urlprev and not self.media: 
+                    self.media = [urlprev[0].get('style').split("background-image:url('")[1].split("')")[0]]
+                    self.media_type = 'url'
+                roundvideo = post.findAll(class_='tgme_widget_message_roundvideo')
+                if roundvideo and not self.media: 
+                    self.media = [roundvideo[0].get('src')]
+                    self.media_type = 'roundvideo'
                     
+                voicemsg = post.findAll(class_='tgme_widget_message_voice')
+                if voicemsg and not self.media: 
+                    self.media = [voicemsg[0].get('src')]
+                    self.media_type = 'voice'
+                
                     
   
             def comments(self,id=None,limit=10): 
@@ -111,8 +128,7 @@ class get():
                             self.datetime = msg.find(class_='tgme_widget_message_date').find('time').get('datetime')    # дата и время отправки сообщения
                     
                     for comment in comments: result.append(Comment(comment, id))
-                    if len(result) == 1: 
-                        if id: return result[0]
+                    if len(result) == 1 and id: return result[0]
                     return result 
                 else: return None   # если коментов вообще нет
 
