@@ -1,6 +1,7 @@
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-import time, json, pytgcf
+import time, json, pytgcf, ssl
+if pytgcf.version < 0.6: exit('please update pytgcf to 0.6 or above!')
 
 hostName = ''
 serverPort = 9191
@@ -11,6 +12,10 @@ class MyServer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'application/json; charset=utf-8')
         self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', '*')
+        self.send_header('Access-Control-Allow-Headers', '*')
+        self.send_header('Access-Control-Allow-Private-Network', 'true')
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate')
         self.end_headers()
         query = self.path.split('/')
         if api_path == query[1]:
@@ -68,6 +73,7 @@ class MyServer(BaseHTTPRequestHandler):
 if __name__ == "__main__":        
     webServer = HTTPServer((hostName, serverPort), MyServer)
     print("Server started http://%s:%s" % (hostName, serverPort))
+
     try: webServer.serve_forever()
     except KeyboardInterrupt: pass
     webServer.server_close()
