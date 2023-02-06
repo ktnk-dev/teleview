@@ -28,18 +28,19 @@ class get():
     def __bool__(self): return False if self.status == None else True
     def __call__(self): return None if self.status == None else True
      
-    def chunk(self, id=0, full=False):
+    def chunk(self, id=0):
+        full = True if id != 0 else False
         id = id if id != 0 else self.latests[0].id 
         url = f'https://t.me/s/{self.channel_short}/{id}'  # ссылка на веб-версию тг с этим каналом
         web = requests.get(url, headers={"User-Agent":"1"}) # реквест
         bs = bs4.BeautifulSoup(web.text, "lxml") # переделка в bs4
         fulldata = [self.post(0,bs=post) for post in bs.findAll(class_='tgme_widget_message')]
-        loaded_posts = [latest.id for latest in self.latests]
-        data = [post for post in fulldata if post.id not in loaded_posts and post.id != id]
-        self.latests = data + self.latests if id == self.latests[0].id and not full else ...
-        
-
-        return data if not full else fulldata
+        if not full:
+            loaded_posts = [latest.id for latest in self.latests] 
+            data = [post for post in fulldata if post.id not in loaded_posts and post.id != id] 
+            self.latests = data + self.latests if id == self.latests[0].id and not full else ...
+            return data
+        else: return fulldata
     
     def post(self, id, bs=None):
         if not self.status: return None
