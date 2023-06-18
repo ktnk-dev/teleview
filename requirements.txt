@@ -1,2 +1,4 @@
+asyncio
 bs4
-lxml
+aiohttp
+html.parser
