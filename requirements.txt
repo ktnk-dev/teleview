@@ -1,4 +1,3 @@
 asyncio
 bs4
 aiohttp
-html.parser
