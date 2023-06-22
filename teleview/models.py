@@ -107,7 +107,7 @@ class Channel:
         self.__data = data
         self.__posts = {}
 
-    async def getPost(self, id = int) -> Post | None:
+    async def getPost(self, id: int) -> Post | None:
         """--- Асинхронная функция для поиска поста в канале ---
 
 Принимает:

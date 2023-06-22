@@ -5,7 +5,7 @@ from .models import *
 from .__init__ import request_header
 
 
-async def getChannel(url = str) -> Channel | None:
+async def getChannel(url: str) -> Channel | None:
     """--- Асинхронная функция для получения инфомрации о канале ---
 
 Принимает:
@@ -28,7 +28,7 @@ async def getChannel(url = str) -> Channel | None:
     
 
 
-async def getPost(channel = Channel | str, id = int) -> Post | None:
+async def getPost(channel: Channel | str, id: int) -> Post | None:
     """--- Асинхронная функция для поиска поста в канале ---
 
 Принимает:
@@ -48,7 +48,7 @@ async def getPost(channel = Channel | str, id = int) -> Post | None:
     else: return runtime.BStoPost(bs.find(class_='tgme_widget_message'), channel)
 
 
-async def getComments(post = Post, limit = 10) -> list[Comment] | None:
+async def getComments(post: Post, limit: int = 10) -> list[Comment] | None:
     """--- Асинхронная функция для получения последних комментариев "под" постом ---
 
 Принимает: 
@@ -68,7 +68,7 @@ async def getComments(post = Post, limit = 10) -> list[Comment] | None:
     comments.reverse()
     return comments
 
-async def getComment(post = Post, id = int) -> Comment | None:
+async def getComment(post: Post, id: int) -> Comment | None:
     """--- Асинхронная функция для поиска комментария по ID ---
 
 Принимает: 
@@ -88,7 +88,7 @@ async def getComment(post = Post, id = int) -> Comment | None:
 
 
 
-async def getAllPosts(channel = Channel) -> list[Post]:
+async def getAllPosts(channel: Channel) -> list[Post]:
     """ --- Асинхронная функция которая получает все посты в канале ---
 
 ВНИМАНИЕ: ВЫПОЛНЕНИЕ МОЖЕТ ЗАНЯТЬ ДЛИТЕЛЬНОЕ ВРЕМЯ!
