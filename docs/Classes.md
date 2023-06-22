@@ -4,10 +4,14 @@
 - *prop* `description [str]` - Описание канала
 - *prop* `subscribers [int]` - Количество подписчиков на канал
 - *prop* `picture [str | None]` - Ссылка на картинку канала
+- *prop* `private [bool]` - Приватный канал или нет
 <!-- <hr> -->
 
 - *async func* [`getPost`](./Functions.md#function-getpost) - Функция для получения поста в канале по ID 
-- *async func* [`getLatest`](./Functions.md#function-getlatest) - Функция для получения последних 20 постов в канале (от актуального до старого)
+- *async func* [`getLatest`](./Functions.md#function-getlatest) - Функция для получения последних 20 постов в канале
+- *async func* [`getAllPosts`](./Functions.md#function-getallposts) - Функция для получения **всех** постов в канале
+- *async func* [`isPublic`](./Functions.md#function-ispublic) - Узнать приватный канал или нет
+- *async func* [`isPrivate`](./Functions.md#function-isprivate) - Узнать публичный канал или нет
 - *async func* [`toDict`](./Functions.md#function-todict) - Функция для отображения всех данных в формате словаря
 <hr>
 

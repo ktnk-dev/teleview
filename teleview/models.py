@@ -99,6 +99,7 @@ class Post:
 
 class Channel:
     def __init__(self, url, name, description, subscribers, picture, data) -> None:
+        self.private = False
         self.url = url
         self.name = name
         self.description = description
@@ -144,8 +145,27 @@ class Channel:
         if not self.__posts: self.__posts = await corotune.getAllPosts(self)
         return self.__posts
 
+    async def isPublic(self) -> bool:
+        """ --- Асинхронная функция которая узнает публичный ли канал или нет ---
 
+Ничего не принимает
 
+Результат:
+    * bool: Публичный канал или нет
+
+        """
+        return not self.private
+    
+    async def isPrivate(self) -> bool: 
+        """ --- Асинхронная функция которая узнает приватный ли канал или нет ---
+
+Ничего не принимает
+
+Результат:
+    * bool: Приватный канал или нет
+
+        """
+        return self.private
 
     async def toDict(self) -> dict:
         return {
@@ -153,5 +173,6 @@ class Channel:
             'name': self.name,
             'description': self.description,
             'subscribers': self.subscribers,
-            'picture': self.picture
+            'picture': self.picture,
+            'private': self.private
         }
