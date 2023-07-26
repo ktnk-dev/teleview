@@ -5,7 +5,7 @@
 * *str* `url` - ссылка или ЮЗ канала 
 
 Результат: 
-* [*class* `Post`](./Classes.md#class-post): если канал найден
+* [*class* `Channel`](./Classes.md#class-channel): если канал найден
 * `None`: если канал НЕ найден
 
 Можно вызвать: 
