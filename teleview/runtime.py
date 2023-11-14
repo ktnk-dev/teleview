@@ -6,7 +6,7 @@ def BStoChannel(bs, name) -> Channel:
     try: description = info.find(class_='tgme_channel_info_description').text # описание 
     except: description = None 
         
-    subs_str = info.find(class_='tgme_channel_info_counter').find(class_='counter_value').text.replace('.','') # получение кол-ва подписчиков
+    subs_str = info.find(class_='tgme_channel_info_counter').find(class_='counter_value').text # получение кол-ва подписчиков / исправление бага с некоректным подсчетом количества подписчиков
     if 'K' in subs_str: subscribers = float(subs_str[:-1])*1000//1 # конвертация из str в int 
     elif 'M' in subs_str: subscribers = float(subs_str[:-1])*1000*1000//1
     else: subscribers = int(subs_str)
