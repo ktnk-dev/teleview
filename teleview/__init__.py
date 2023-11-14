@@ -1,7 +1,7 @@
 from .corotune import *
 from .models import *
 
-version = '1.2.1'
+version = '1.2.2'
 source = 'https://github.com/ktnk-dev/teleview'
 random_UA = True
 request_header = {
