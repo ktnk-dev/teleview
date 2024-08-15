@@ -1,3 +1,2 @@
-asyncio
 bs4
 aiohttp
