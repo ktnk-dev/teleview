@@ -1,105 +1,25 @@
-# О библиотеке *Teleview*
-- Асинхронная Python библиотека для получения информации о канале, его постах, и комментариев
-- Зависимости: `asyncio`, `aiohttp`, `bs4`
-- Версия: `release`/`1.2.2` 
+# About *Teleview*
+- Async Python library to get channels, posts and comments
+- Version: `release`/`2.0` 
+- Providers: `telegram` (by default)
+- Dependencies: `aiohttp`, `bs4`
 
-# Возможности библиотеки
-- Получения информации о канале: название, описание, кол-во подписчиков, фотография канала
-- Поиск постов по ID, получение 20 актуальных постов, получение *всех* постов в канале
-- Получение информации о постах: текст, дата, кол-во просмотров, прикрепленные медиа итд...
-- Поиск комментариев по ID и получение актуальных комментариев
-- Получение информации о комментарии: текст, дата, автор итд...
+# [Documentation](https://no.sinya.ru/?teleview)
+- Functions, Datatypes and Exception documentation
+- First steps with code examples
+- Code migration from `v1.2.2`
+- Release notes, FAQ, and more...
 
-# Документация библиотеки
-- [Все доступные функции](./docs/Functions.md)
-- [Все доступные классы](./docs/Classes.md) 
+# What are *providers*
+- Providers allow to get info from different social networks using only *Teleview* package!
+- Output is standardized and prototyped. You can change providers *on fly* without changing your code!
 
-# Примеры использования 
-```py
-import teleview, asyncio
-async def main():
-
-    # --- Получения информации о канале --- #
-    channel = await teleview.getChannel('contest')
-
-    print(f'Название канала: {channel.name}')
-    print(f'Описание канала: {channel.description}')
-    if channel.private: print('Это приватный канал')
-        # или await channel.isPrivate()
-    else: print('Это публичный канал')
-
-
-    # --- Поиск поста по ID --- #
-    post = await channel.getPost(198)
-     # или await teleview.getPost(channel, 198)
-     # или await teleview.getPost('contest', 198)
-
-    print(f'* Текст поста с ID {post.id}: {post.text}')
-
-
-    # --- Получение 20 актуальных постов --- #
-    latest_posts = await channel.getLatest()
-    for latest_post in latest_posts: 
-        print(f'* Текст поста с ID {latest_post.id}: {latest_post.text}')
-
-
-    # --- Поиск комментария по ID --- #
-    comment = await post.getComment(141108)
-        # или await teleview.getComment(post, 141108)
-
-    print(f'- Текст комментария с ID {comment.id}: {comment.text}')
-
-
-    # --- Получение 15 актуальных комментариев --- #
-    latest_comments = await post.getComments(limit = 15)
-                # или await teleview.getComments(post, limit = 15)
-    for latest_comment in latest_comments:
-        print(f'- Текст комментария с ID {latest_comment.id}: {latest_comment.text}')
-
-asyncio.run(main())
-```
-
+### *Teleview* capabilities with `telegram` provider
+- Get channel information: name, description, photo and more...
+- Get posts in channel: by ID, latest, even *all* posts in channel
+- Get text, media, views and datetime from posts
+- Get comments sent in post: by ID or 100 latest
 
 # TODO
-- ~~Аватарка канала~~ (готово v0.2)
-- ~~Количество подписчиков~~ (готово v0.2)
-- ~~Количество просмотров на посте~~ (готово v0.2)
-- ~~Список реакций~~ (невозможно)
-- ~~Комментарии~~ (готово v0.4)
-- ~~Поддержка получения видео-сообщений через [telesco.pe](https://telesco.pe/)~~ (готово v1.0, переделано в v1.2)
-- ~~Сделать прогрузку *всех* постов в канале вместо удаленного `chunk()`~~ (готово v1.2)
-- ~~В далеком будующем сделать на основе этого REST API~~ (будет сделано отдельным проектом) 
-- Получения прикрепленных медиа в комментариях
-- Доступ к приватным каналам (используя TGstat например)
-
-# CHANGELOG
-- **1.2.2**:
-Исправление моей ошибки, из-за которой был неправильный подсчет количества подписчиков
-
-- **1.2.1**: 
-Подготовка кода к реализации доступа к приватным каналам. Добавлены функции [`isPublic`](./docs/Functions.md#function-ispublic) и [`isPrivate`](./docs/Functions.md#function-isprivate) для класса [`Channel`](./docs/Classes.md#class-channel). Исправлены опечатки. Удалено упоминание RestAPI. Он будет реализован как отдельный проект.
-
-- **1.2**:
-полностью переписана библиотека, теперь она асинхронная. код выглядет понятнее, структурированнее. можно использовать как библиотеку. проект переименован c **pytgcf** в **Teleview**. изменена документация и очень много других аспектов работы с библиотекой...
-
-- **1.0**:
-добавлена возможность получения как видео-сообщений, так и видео-файлов и голосовых сообщений. добавлена переменная `media_type`, см [описание](./REF.md#media_type)
-
-- **0.6**:
-сделан REST API, добавлена возможность загружать больше актуальных постов, переписана документация
-
-- **0.5**:
-отредактирован выхлоп если информация отсуствует. переписан и выложен в открытый доступ тест
-
-- **0.4**: 
-добавлено `pytgcf.get(name).post(id).comments(comment_id, limit=10)` 
-
-- **0.3**:
-`pytgcf.get(name).posts(id)` заменен на `pytgcf.get(name).post(id)`, выдает теперь не список, а готовый класс с нужной информацией о посте 
-
-- **0.2**:
-теперь при вызове `pytgcf.get(name)` создается класс с информацией о канале, где `name` это сокращенное имя (link) на канал. реализован там почти половина TODO. посты получать в `pytgcf.get(name).posts(id)` или готовый `pytgcf.get(name).latests` где 20 последних постов
-
-- **0.1**:
-проект создан.
-`pytgcf.get(name,id)` выводит список из словарей с информацией о посте
+- [*telegram*] Get media from comments
+- [*lib*] `TGstat` and `VK` providers
