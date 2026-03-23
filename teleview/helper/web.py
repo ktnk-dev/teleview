@@ -1,6 +1,14 @@
 import aiohttp, bs4, json
 from typing import Any
 
+_PROXY_URL = None
+
+def setProxy(proxy_url: str):
+    """### Set `http` proxy for all requests
+    Format: `http://user:password@proxy_host:port`
+    """
+    global _PROXY_URL
+    _PROXY_URL = proxy_url
 
 class Request:
     def __init__(self, url: str, headers: dict = {}) -> None:
@@ -15,8 +23,8 @@ After init you must call `await request.load()`
 
     async def load(self) -> str:
         """Updates self.text and returns it"""
-        async with aiohttp.ClientSession() as client:
-            async with client.get(self.url, headers=self.headers) as resp: 
+        async with aiohttp.ClientSession(proxy=_PROXY_URL) as client:
+            async with client.get(self.url, headers=self.headers, ssl=False) as resp: 
                 self.text = await resp.text('utf-8')
         
         return self.text

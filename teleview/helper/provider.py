@@ -5,7 +5,7 @@ from .. import exceptions
 
 HEADERS: dict = {}
 PROVIDER = False
-VERSION: float = 2.0
+VERSION: float = 2.1
 
 
 class BaseProvider:
