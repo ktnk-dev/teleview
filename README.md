@@ -1,18 +1,16 @@
 # About *Teleview*
 - Async Python library to get channels, posts and comments
-- Version: `release`/`2.0` 
+- Version: `release`/`3.0` 
 - Providers: `telegram` (by default)
 - Dependencies: `aiohttp`, `bs4`
 
-# [Documentation](https://no.sinya.ru/?teleview)
-- Functions, Datatypes and Exception documentation
-- First steps with code examples
-- Code migration from `v1.2.2`
-- Release notes, FAQ, and more...
+# Resources
+- Documentation `TBD`
+- [Release notes](./RELEASENOTES.md)
 
 # What are *providers*
 - Providers allow to get info from different social networks using only *Teleview* package!
-- Output is standardized and prototyped. You can change providers *on fly* without changing your code!
+- Output is standardized and prototyped. You can change providers *on the fly* without changing your code!
 
 ### *Teleview* capabilities with `telegram` provider
 - Get channel information: name, description, photo and more...

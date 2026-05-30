@@ -2,16 +2,18 @@
 from types import ModuleType
 from typing import AsyncGenerator
 from .. import exceptions
+from . import enums
 
 HEADERS: dict = {}
 PROVIDER = False
-VERSION: float = 2.1
+VERSION: float = 3.0
 
 
 class BaseProvider:
     REQUIRED_TELEVIEW_VERSION: float
     VERSION: float
-    SUPPORTED: tuple
+    SUPPORTED: enums.Supported
+    CACHE_STRATEGY: enums.CacheStrategy
 
 #     @staticmethod
 #     async def getChannels(query: str | int) -> AsyncGenerator[models.constructor.ChannelConstructor, None]:

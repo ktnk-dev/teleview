@@ -35,6 +35,7 @@ MediaConstructor(
     {self.url=}
     {self.type=}
     {self.mimetype=}
+) <- all fields are required
 ''')     
             raise IncorrectConstructor()
         
@@ -45,24 +46,26 @@ class ChannelConstructor:
     """Channel Constructor object
 
 Must be sepcified to not raise an error
-- url
 - name
-- subscribers
 
-Anything else can be not-specified, it will False by default\n
+Anything else can be not-specified, it will False by default (subscribers = 0)\n
 You can also specify any other information using setIternal(dict_of_data)\n
-For example to set channelID or any other important to parse information
+For example cached data or any other important to parse information
     
     """
     def __init__(self) -> None:
+        self.id = False
         self.url = False
         self.name = False
         self.picture = False
         self.description = False
-        self.subscribers = False
+        self.subscribers = 0
 
         self.iternal = {}
 
+    def setID(self, id: str | int) -> None:
+        self.id = id
+    
     def setUrl(self, url: str) -> None:
         self.url = url
 
@@ -82,15 +85,16 @@ For example to set channelID or any other important to parse information
         self.iternal = iternalInfo
 
     def build(self) -> Channel:
-        if not self.url or not self.name or type(self.subscribers) != int: 
+        if not self.name or type(self.subscribers) != int: 
             print(f'''
 [teleview] Failed to build Channel from constructor
 ChannelConstructor(
-    {self.url=}
-    {self.name=}
+    {self.id=}
+    {self.url=} 
+    {self.name=} {'<- required' if not self.name else ''}
     {self.picture=}
     {self.description=}
-    {self.subscribers=}
+    {self.subscribers=} {'<- must be an integer' if type(self.subscribers) != int else ''}
     {self.iternal=}
 )                  
 ''')
@@ -102,17 +106,20 @@ class PostConstructor:
     """Post Constructor object
 
 Must be sepcified to not raise an error
-- url
 - datetime
+
+Notice: `author` can be specified if there are several admins in channel (or you are trying to parse Reddit)
+by default `author = channel`
 
 Anything else can be not-specified, it will False (views = 0, media = []) by default\n
 You can also specify any other information using setIternal(dict_of_data)\n
-For example to set postID or any other important to parse information
+For example cached data or any other important to parse information
     
     """
     def __init__(self, channel: Channel) -> None:
         self.channel = channel
-
+        self.author = False
+        self.id = False
         self.url = False
         self.text = False
         self.views = 0
@@ -120,6 +127,13 @@ For example to set postID or any other important to parse information
         self.datetime = False
 
         self.iternal = {}
+
+    def setAuthor(self, author: AuthorConstructor):
+        # TODO: implement gathering channel for using as author from provider's side
+        self.author = author
+
+    def setID(self, id: str | int) -> None:
+        self.id = id
 
     def setUrl(self, url: str) -> None:
         self.url = url
@@ -140,16 +154,18 @@ For example to set postID or any other important to parse information
         self.iternal = iternalInfo
 
     def build(self) -> Post:
-        if not self.url or not self.datetime: 
+        if not self.datetime: 
             print(f'''
 [teleview] Failed to build Post from constructor
 PostConstructor(
     {self.channel=}
+    {self.author=}
+    {self.id=}
     {self.url=}
     {self.text=}
     {self.views=}
     {self.media=}
-    {self.datetime=}
+    {self.datetime=} {'<- required' if not self.datetime else ''}
     {self.iternal=}
 )                  
 ''')
@@ -181,7 +197,7 @@ Must be sepcified to not raise an error
             print(f'''
 [teleview] Failed to build Author from constructor
 AuthorConstructor(
-    {self.name=}
+    {self.name=} {'<- required' if not self.name else ''}
     {self.picture=}
 )
 ''')     
@@ -198,12 +214,13 @@ Must be sepcified to not raise an error
 
 Anything else can be not-specified, it will False (media = []) by default\n
 You can also specify any other information using setIternal(dict_of_data)\n
-For example to set commentID or any other important to parse information
+For example cached data or any other important to parse information
     
     """
     def __init__(self, post: Post) -> None:
         self.post = post
-
+        self.id = False
+        self.url = False
         self.text = False
         self.media = []
         self.author = False
@@ -211,11 +228,15 @@ For example to set commentID or any other important to parse information
 
         self.iternal = {}
 
-
+    def setID(self, id: str | int) -> None:
+        self.id = id
 
     def setText(self, text: str) -> None:
         self.text = text
 
+    def setUrl(self, url: str) -> None:
+        self.url = url
+        
     def setAuthor(self, author: AuthorConstructor) -> None:
         self.author = author
 
@@ -234,10 +255,12 @@ For example to set commentID or any other important to parse information
 [teleview] Failed to build Post from constructor
 CommentConstructor(
     {self.post=}
+    {self.id=}
+    {self.url=}
     {self.text=}
-    {self.author=}
+    {self.author=} {'<- required' if not self.author else ''}
     {self.media=}
-    {self.datetime=}
+    {self.datetime=} {'<- required' if not self.datetime else ''}
     {self.iternal=}
 )                  
 ''')

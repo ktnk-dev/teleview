@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 
 # Helper
 from .helper.provider import getProvider
-from .helper import supported
+from .helper.enums import Supported as _s
 
 # Exceptions
 from . import exceptions
@@ -23,7 +23,8 @@ Exceptions:
 * `NotSupported`
 
 """
-    if supported.StreamChannelOutput not in getProvider().SUPPORTED:
+    print(_s.StreamChannelOutput in getProvider().SUPPORTED)
+    if _s.StreamChannelOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
     found = 0
@@ -63,7 +64,7 @@ Exceptions:
 * `NotSupported`
 
 """
-    if supported.StreamPostOutput not in getProvider().SUPPORTED:
+    if _s.StreamPostOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
     found = 0
@@ -90,7 +91,7 @@ Exceptions:
 * `NotSupported`
 
 """
-    if supported.PostOutput not in getProvider().SUPPORTED:
+    if _s.PostOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
     constructor = await getProvider().getPost(channel, query)
@@ -112,7 +113,7 @@ Exceptions:
 * `NotSupported`
 
 """
-    if supported.StreamCommentOutput not in getProvider().SUPPORTED:
+    if _s.StreamCommentOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
     found = 0
@@ -141,7 +142,7 @@ Exceptions:
 * `NotSupported`
 
 """
-    if supported.CommentOutput not in getProvider().SUPPORTED:
+    if _s.CommentOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
     constructor = await getProvider().getComment(post, query)

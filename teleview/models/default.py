@@ -4,7 +4,7 @@ from datetime import datetime as Datetime
 
 # Exceptions
 from ..exceptions import *        
-from ..helper import supported
+from ..helper.enums import Supported as _s
 from ..helper.provider import getProvider
 
 class Media:
@@ -27,21 +27,16 @@ class Author:
         self.picture: Media | False = constructor.picture.build() if constructor.picture else False
         
     async def toDict(self) -> dict:
-        if self.picture:
-            return {
-                'name': self.name,
-                'picture': await self.picture.toDict()
-            }
-        else:
-            return {
-                'name': self.name,
-                'picture': False
-            }
-
+        return {
+            'name': self.name,
+            'picture': (await self.picture.toDict()) if self.picture else False
+        }
+        
 class Comment:
     def __init__(self, constructor) -> None:
         self.post: Post = constructor.post
-        
+        self.id: str | int | False = constructor.id
+        self.url: str | False = constructor.url
         self.text: str | False = constructor.text
         self.media: list[Media] = [media.build() for media in constructor.media]
         self.author: Author = constructor.author.build()
@@ -53,6 +48,8 @@ class Comment:
     async def toDict(self) -> dict:
         return {
             'post': await self.post.toDict(),
+            'id': self.id,
+            'url': self.url,
             'author': await self.author.toDict(),
             'text': self.text,
             'media': [await media.toDict() for media in self.media],
@@ -62,7 +59,9 @@ class Comment:
 class Post:
     def __init__(self, constructor) -> None:
         self.channel: Channel = constructor.channel
-        self.url: str = constructor.url
+        self.author: Channel | Author = constructor.author.build() if constructor.author else self.channel
+        self.id: str | int | False = constructor.id
+        self.url: str | False = constructor.url
         self.text: str | False = constructor.text
         self.views: int = constructor.views
         self.media: list[Media] = [media.build() for media in constructor.media]
@@ -83,7 +82,7 @@ Exceptions:
 * `NotSupported`
 
 """
-        if supported.CommentOutput not in getProvider().SUPPORTED:
+        if _s.CommentOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
         constructor = await getProvider().getComment(self, query)
@@ -105,7 +104,7 @@ Exceptions:
 * `NotSupported`
 
 """
-        if supported.StreamCommentOutput not in getProvider().SUPPORTED:
+        if _s.StreamCommentOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
         found = 0
@@ -118,6 +117,8 @@ Exceptions:
     async def toDict(self) -> dict:
         return {
             'channel': await self.channel.toDict(),
+            'author': await self.author.toDict(),
+            'id': self.id,
             'url': self.url,
             'text': self.text,
             'views': self.views,
@@ -127,13 +128,10 @@ Exceptions:
 
 class Channel:
     def __init__(self, constructor) -> None:
-        self.url: str = constructor.url
+        self.id: str | int | False = constructor.id
+        self.url: str | False = constructor.url
         self.name: str = constructor.name
-        self.picture: Media | False = False
-
-        if constructor.picture:
-            self.picture: Media | False = constructor.picture.build()
-
+        self.picture: Media | False = constructor.picture.build() if constructor.picture else False
         self.description: str | False = constructor.description
         self.subscribers: int = constructor.subscribers
 
@@ -153,7 +151,7 @@ Exceptions:
 * `NotSupported`
 
 """
-        if supported.PostOutput not in getProvider().SUPPORTED:
+        if _s.PostOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
         constructor = await getProvider().getPost(self, query)
@@ -166,7 +164,7 @@ Exceptions:
         """### Async function to get post
 
 Args:
-* `limit` [int >= 0] = 20
+* `limit` [int >= 0] = 20; set to 0 to get all results if possible
 
 Return: `AsyncGenerator[Post]`
 
@@ -175,7 +173,7 @@ Exceptions:
 * `NotSupported`
 
 """
-        if supported.StreamPostOutput not in getProvider().SUPPORTED:
+        if _s.StreamPostOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
         found = 0
@@ -187,19 +185,11 @@ Exceptions:
 
 
     async def toDict(self) -> dict:
-        if self.picture:
-            return {
-                'url': self.url,
-                'name': self.name,
-                'picture': await self.picture.toDict(),
-                'description': self.description,
-                'subscribers': self.subscribers
-            }
-        else:
-            return {
-                'url': self.url,
-                'name': self.name,
-                'picture': False,
-                'description': self.description,
-                'subscribers': self.subscribers
-            }
+        return {
+            'id': self.id,
+            'url': self.url,
+            'name': self.name,
+            'picture': (await self.picture.toDict()) if self.picture else False,
+            'description': self.description,
+            'subscribers': self.subscribers
+        }

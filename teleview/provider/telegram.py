@@ -2,10 +2,11 @@ import bs4
 import datetime
  
 from typing import AsyncGenerator
-from ..helper.supported import *
+from ..helper.enums import Supported, CacheStrategy
+from ..helper.caching import CacheBuffer
 from ..models.constructor import *
 
-from ..helper.provider import getHeaders
+from ..helper.provider import getHeaders, BaseProvider
 from ..helper.web import Request
 
 #! Здесь бога нет
@@ -42,6 +43,31 @@ class Convert:
         return int(id), text, media, views, datetime
     
     @staticmethod
+    def media_helper(mediaList):
+        mediaConstr = []
+        for mediaInfo in mediaList:
+            media = MediaConstructor()
+            media.setUrl(mediaInfo[0])
+            match (mediaInfo[1].split('/')[0]):
+                case 'image':
+                    media.setType('photo')
+                    media.setMimetype('image/jpeg')
+
+                case 'video':
+                    media.setType('video')
+                    media.setMimetype('video/mp4')
+
+                case 'round_video':
+                    media.setType('round_video')
+                    media.setMimetype('video/mp4')
+
+                case 'voice':
+                    media.setType('voice_message')
+                    media.setMimetype('audio/ogg')
+            mediaConstr.append(media)
+        return mediaConstr
+
+    @staticmethod
     def comment(bs: bs4.BeautifulSoup):
         return int(bs.get('data-post-id')), bs4.BeautifulSoup(str(bs.find(class_='js-message_text')).replace('<br/>','\n'), 'html.parser').text, bs.find(class_='tgme_widget_message_date').find('time').get('datetime')
 
@@ -52,25 +78,22 @@ class Convert:
         return bs.find(class_='tgme_widget_message_author_name').text, author_photo
 
 
-class Provider:
+class Provider(BaseProvider):
     REQUIRED_TELEVIEW_VERSION: float = 2.0
     VERSION: float = 1.0
 
-    SUPPORTED: tuple = (
-        #! StreamChannelOutput, #! Not supported 
-        StreamPostOutput, 
-        StreamCommentOutput, 
-        PostOutput, 
-        CommentOutput
-    )
+    SUPPORTED: Supported = Supported.StreamPostOutput | Supported.StreamCommentOutput | Supported.PostOutput | Supported.CommentOutput
+    CACHE_STRATEGY: CacheStrategy = CacheStrategy.CacheBuffer | CacheStrategy.AutoByRequest
 
     @staticmethod 
     async def getChannel(query: str | int) -> ChannelConstructor:
         if type(query) != str: raise ChannelNotFound()
-
         # возможность кушать ссылки
         query = query.replace('@','')
         if '/' in query: query = query.split('/')[3]
+        
+        cached = CacheBuffer.get(query)
+        if cached: return cached
 
         request = Request(f'https://t.me/s/{query}', getHeaders())
         await request.load()
@@ -78,7 +101,7 @@ class Provider:
         if not info: raise ChannelNotFound()
 
         channel = ChannelConstructor()
-
+        channel.setID(query)
         channel.setUrl(f'https://t.me/{query}')
         channel.setName(info.find(class_='tgme_channel_info_header_title').text)
 
@@ -102,162 +125,71 @@ class Provider:
         except: ...
 
         channel.setIternal({
-            'id': query,
+            'id': query, # оставляю чтобы не ломать сущетвующий софт
             'bs': request.toBS()
         })
 
+        CacheBuffer.set(query, channel)
         return channel
 
     @staticmethod
     async def getPosts(channel: Channel) -> AsyncGenerator[PostConstructor, None]:
-        bsLatest: bs4.BeautifulSoup = channel._iternal['bs']
-        lastId = 0
-        bsList = bsLatest.findAll(class_='tgme_widget_message')
-        bsList.reverse()
-        for postBS in bsList:
-            id, text, mediaList, views, date = Convert.post(postBS)
-            lastId = id
-            post = PostConstructor(channel)
-
-            post.setUrl(f'{channel.url}/{id}')
-            post.setText(text)
-            post.setViews(views)
-
-            mediaConstr = []
-            for mediaInfo in mediaList:
-                media = MediaConstructor()
-                media.setUrl(mediaInfo[0])
-                match (mediaInfo[1].split('/')[0]):
-                    case 'image':
-                        media.setType('photo')
-                        media.setMimetype('image/jpeg')
-
-                    case 'video':
-                        media.setType('video')
-                        media.setMimetype('video/mp4')
-
-                    case 'round_video':
-                        media.setType('round_video')
-                        media.setMimetype('video/mp4')
-
-                    case 'voice':
-                        media.setType('voice_message')
-                        media.setMimetype('audio/ogg')
-                
-                mediaConstr.append(media)
-
-            post.setMedia(mediaConstr)
-
-            post.setDatetime(datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z'))
-
-
-            post.setIternal({
-                'id': id,
-                'bs': postBS
-            })
-
-            yield post
-        
-        while lastId > 1:
-            requset = Request(f'https://t.me/s/{channel._iternal["id"]}/{lastId}')
+        first: bool = True
+        lastId: int = -1
+        while lastId > 1 or first:
+            requset = Request(f'https://t.me/s/{channel._iternal["id"]}/{lastId if not first else ""}')
             await requset.load()
             bs = requset.toBS()
             bsList = bs.findAll(class_='tgme_widget_message')
             bsList.reverse()
             for postBS in bsList:
                 id, text, mediaList, views, date = Convert.post(postBS)
-                if id >= lastId: continue
+                if not first:
+                    if id >= lastId: continue
                 lastId = id
+                first = False
                 post = PostConstructor(channel)
-
                 post.setUrl(f'{channel.url}/{id}')
                 post.setText(text)
                 post.setViews(views)
-
-                mediaConstr = []
-                for mediaInfo in mediaList:
-                    media = MediaConstructor()
-                    media.setUrl(mediaInfo[0])
-                    match (mediaInfo[1].split('/')[0]):
-                        case 'image':
-                            media.setType('photo')
-                            media.setMimetype('image/jpeg')
-
-                        case 'video':
-                            media.setType('video')
-                            media.setMimetype('video/mp4')
-
-                        case 'round_video':
-                            media.setType('round_video')
-                            media.setMimetype('video/mp4')
-
-                        case 'voice':
-                            media.setType('voice_message')
-                            media.setMimetype('audio/ogg')
-                    
-                    mediaConstr.append(media)
-
-                post.setMedia(mediaConstr)
-
+                post.setMedia(Convert.media_helper(mediaList))
                 post.setDatetime(datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z'))
-
-
+                post.setID(id)
                 post.setIternal({
                     'id': id,
                     'bs': postBS
                 })
-
+                CacheBuffer.set(f'{channel.id}:{id}', post)
                 yield post
 
     @staticmethod 
     async def getPost(channel: Channel, query: str | int) -> PostConstructor:
         if type(query) != int: raise PostNotFound()
+        
+        cached = CacheBuffer.get(f'{channel.id}:{query}')
+        if cached: return cached
+
         request = Request(f'{channel.url}/{query}?embed=1', getHeaders())
         await request.load()
         if request.toBS().find(class_='tgme_widget_message_error'): raise PostNotFound()
         id, text, mediaList, views, date = Convert.post(request.toBS().find(class_='tgme_widget_message'))
         post = PostConstructor(channel)
-
-
         post.setUrl(f'{channel.url}/{id}')
         post.setText(text)
         post.setViews(views)
-
-        mediaConstr = []
-        for mediaInfo in mediaList:
-            media = MediaConstructor()
-            media.setUrl(mediaInfo[0])
-            match (mediaInfo[1].split('/')[0]):
-                case 'image':
-                    media.setType('photo')
-                    media.setMimetype('image/jpeg')
-
-                case 'video':
-                    media.setType('video')
-                    media.setMimetype('video/mp4')
-
-                case 'round_video':
-                    media.setType('round_video')
-                    media.setMimetype('video/mp4')
-
-                case 'voice':
-                    media.setType('voice_message')
-                    media.setMimetype('audio/ogg')
-            
-            mediaConstr.append(media)
-
-        post.setMedia(mediaConstr)
+        post.setMedia(Convert.media_helper(mediaList))
 
         post.setDatetime(datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z'))
         # %Y-%m-%dT%H:%M:%S%z
         # 2024-07-26T18:18:13+00:00 
-
+        post.setID(id)
 
         post.setIternal({
             'id': id,
             'bs': request.toBS()
         })
-
+        
+        CacheBuffer.set(f'{channel.id}:{query}', post)
         return post
 
     @staticmethod
@@ -265,7 +197,6 @@ class Provider:
         request = Request(f'{post.url}?embed=1&discussion=1&comments_limit=100', getHeaders())
         await request.load()
         bs = request.toBS()
-
 
         if bs.find(class_='tgme_widget_message_error') or bs.find(class_='tme_no_messages_found'):
             raise CommentNotFound()
@@ -285,13 +216,14 @@ class Provider:
                 picture.setUrl(pictureUrl)
                 picture.setType('photo')
                 picture.setMimetype('image/jpeg')
+                author.setPicture(picture)
             
             comment.setAuthor(author)
-            
+            comment.setID(int(id))
             comment.setText(text)
             comment.setDatetime(datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z'))
             comment.setIternal({'id': int(id)})
-
+            CacheBuffer.set(f'{post.channel.id}:{post.id}:{id}', comment)
             yield comment
         
 
@@ -299,6 +231,9 @@ class Provider:
     @staticmethod
     async def getComment(post: Post, query: str | int) -> CommentConstructor:
         if type(query) != int: raise CommentNotFound()
+        
+        cached = CacheBuffer.get(f'{post.channel.id}:{post.id}:{query}')
+        if cached: return cached
 
         request = Request(f'{post.url}?comment={query}&embed=1', getHeaders())
         await request.load()
@@ -321,11 +256,12 @@ class Provider:
             picture.setUrl(pictureUrl)
             picture.setType('photo')
             picture.setMimetype('image/jpeg')
+            author.setPicture(picture) #? maybe??
         
         comment.setAuthor(author)
-
         comment.setText(text)
         comment.setDatetime(datetime.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z'))
+        comment.setID(int(id))
         comment.setIternal({'id': int(id)})
-
+        CacheBuffer.set(f'{post.channel.id}:{post.id}:{id}', comment)
         return comment

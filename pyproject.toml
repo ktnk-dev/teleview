@@ -1,10 +1,27 @@
 [project]
 name = "teleview"
-version = "2.1"
+version = "3.0"
 description = "Simple, yet powerfull telegram (not only) parser"
 readme = "README.md"
 requires-python = ">=3.14"
+license = "MIT"
+authors = [
+    {name = "Sinya"}
+]
+keywords = ["telegram", "parser", "async", "scraping", "social-media"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+]
 dependencies = [
     "aiohttp>=3.13.3",
+    "aiohttp-socks>=0.11.0",
     "bs4>=0.0.2",
 ]
+urls = {Homepage = "https://github.com/ktnk-dev/teleview", Repository = "https://github.com/ktnk-dev/teleview"}
