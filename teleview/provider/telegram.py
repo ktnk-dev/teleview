@@ -79,7 +79,7 @@ class Convert:
 
 
 class Provider(BaseProvider):
-    REQUIRED_TELEVIEW_VERSION: float = 2.0
+    REQUIRED_TELEVIEW_VERSION: float = 3.0
     VERSION: float = 1.0
 
     SUPPORTED: Supported = Supported.StreamPostOutput | Supported.StreamCommentOutput | Supported.PostOutput | Supported.CommentOutput
