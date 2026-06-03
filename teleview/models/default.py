@@ -8,6 +8,17 @@ from ..helper.enums import Supported as _s
 from ..helper.provider import getProvider
 
 class Media:
+    """Represents any media content (profile picuters, photos in posts, etc)"""
+    __slots__ = ['url', 'type', 'mimetype']
+    
+    url: str 
+    """Direct URL to media"""
+    
+    type: str
+    """*Kind* of media `depends on provider`"""
+    
+    mimetype: str
+    
     def __init__(self, constructor) -> None:
         self.url: str = constructor.url
         self.type: str = constructor.type
@@ -22,6 +33,15 @@ class Media:
         }
 
 class Author:
+    """Represents comment or post author"""
+    __slots__ = ['name', 'picture']
+    
+    name: str
+    """Author's name"""
+    
+    picture: Media | False
+    """Author's profile picture"""
+    
     def __init__(self, constructor) -> None:
         self.name: str = constructor.name
         self.picture: Media | False = constructor.picture.build() if constructor.picture else False
@@ -33,6 +53,20 @@ class Author:
         }
         
 class Comment:
+    """Represents post's comment"""
+    __slots__ = ['post', 'id', 'url', 'text', 'media', 'author', 'datetime', '_iternal']
+    
+    post: Post    
+    id: str | int | False 
+    url: str | False 
+    text: str | False
+    media: list[Media]
+    """Media attached to comment"""
+    author: Author
+    datetime: Datetime
+    _iternal: dict
+    """Any optional data that provider returned"""
+    
     def __init__(self, constructor) -> None:
         self.post: Post = constructor.post
         self.id: str | int | False = constructor.id
@@ -57,6 +91,22 @@ class Comment:
         }
 
 class Post:
+    """Represents post's comment"""
+    __slots__ = ['channel', 'author', 'id', 'url', 'text', 'views', 'media' 'datetime', '_iternal']
+    
+    channel: Channel    
+    author: Author
+    id: str | int | False 
+    url: str | False 
+    text: str | False
+    views: int
+    """Amount of views"""
+    media: list[Media]
+    """Media attached to post"""
+    datetime: Datetime
+    _iternal: dict
+    """Any optional data that provider returned"""
+    
     def __init__(self, constructor) -> None:
         self.channel: Channel = constructor.channel
         self.author: Channel | Author = constructor.author.build() if constructor.author else self.channel
@@ -91,7 +141,7 @@ Exceptions:
 
 
 
-    async def getComments(self, limit: int= 20) -> AsyncGenerator[Comment, None]:
+    async def getComments(self, limit: int = 20) -> AsyncGenerator[Comment, None]:
         """### Async function to get comments
 
 Args:
