@@ -1,3 +1,10 @@
+# 3.1 
+There are no changes in calls and models
+
+## `teleview` _library_
+- Automatically generated docs
+- Removed some code duplication
+
 # 3.0
 Since changes may break existing software, major version tag has been changed
 ## `teleview` _library_

@@ -1,8 +1,8 @@
- [Release notes](./docs/RELEASENOTES.md) | [Documentation](./docs/README.md) `WIP` | [Installation](./docs/INSTALLATION.md) `WIP`
+ [Release notes](./docs/RELEASENOTES.md) | [Documentation](./docs/md/README.md) | [Installation](./docs/INSTALLATION.md) `WIP`
 
 # About *Teleview*
 - Async Python library to get channels, posts and comments
-- Version: `release`/`3.0` 
+- Version: `release`/`3.1` 
 - Providers: `telegram` (by default)
 - Dependencies: `aiohttp`, `bs4`
 
