@@ -63,7 +63,7 @@ def ModelDocumentation(params_docs: dict[str, str], index: int = 0):
 def CallDocumentation(
     origin: str,
     support_required: list[str],
-    exceptions: list[BaseException] = [],
+    exceptions: list[type[BaseException]] = [],
     args: dict[str, str] = {},
     index: int = 0,
     alias: str | None = None
@@ -233,3 +233,14 @@ def build():
     build_md('./docs/md')
     build_web('./docs/web')
     
+    with open(f'README.md', 'r', encoding='utf-8') as r:
+        data = r.read()
+        old_version = data.split('`release`/')[-1].split('\n')[0]
+        with open(f'README.md', 'w', encoding='utf-8') as w:
+            w.write(data.replace(old_version, f'`{_VERSION}`'))
+            
+    with open(f'pyproject.toml', 'r', encoding='utf-8') as r:
+        data = r.read()
+        old_version = data.split('version = ')[-1].split('\n')[0]
+        with open(f'pyproject.toml', 'w', encoding='utf-8') as w:
+            w.write(data.replace(f'version = {old_version}', f'version = "{_VERSION}"'))

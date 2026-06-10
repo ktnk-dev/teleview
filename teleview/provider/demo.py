@@ -66,7 +66,7 @@ class Provider(BaseProvider):
         for _ in range(random.randint(5, 15)):
             
             channel = ChannelConstructor()
-            channel.setId(random.randint(10000, 99999))
+            channel.setID(random.randint(10000, 99999))
 
             randomNumber = random.randint(1000, 9999)
             channel.setUrl(f'https://example.com/channels/@{query}{randomNumber}')
@@ -92,7 +92,7 @@ class Provider(BaseProvider):
 
         # Returning result
         channel = ChannelConstructor()
-        channel.setId(random.randint(10000, 99999))
+        channel.setID(random.randint(10000, 99999))
 
         channel.setUrl(f'https://example.com/channels/@{query}')
         channel.setName(f'{query} {random.randint(1000, 9999)}')
@@ -112,7 +112,7 @@ class Provider(BaseProvider):
             randomNumber = random.randint(1000, 9999)
 
             post = PostConstructor(channel)
-            post.setId(randomNumber)
+            post.setID(randomNumber)
 
             post.setUrl(f'{channel.url}/posts/{randomNumber}')
             post.setDatetime(datetime.datetime.now())
@@ -152,7 +152,7 @@ class Provider(BaseProvider):
         if cached: return cached
 
         post = PostConstructor(channel)
-        post.setId(query)
+        post.setID(query)
 
         post.setUrl(f'{channel.url}/posts/{query}')
         post.setDatetime(datetime.datetime.now())
@@ -189,7 +189,7 @@ class Provider(BaseProvider):
 
         for _ in range(random.randint(20, 40)):
             comment = CommentConstructor(post)
-            comment.setId(random.randint(1000, 9999))
+            comment.setID(random.randint(1000, 9999))
             author = AuthorConstructor()
             author.setName(f'Name {random.randint(100,999)}')
 
@@ -225,7 +225,7 @@ class Provider(BaseProvider):
         if random.random() < 0.05: raise CommentNotFound()
 
         comment = CommentConstructor(post)
-        comment.setId(query)
+        comment.setID(query)
 
         author = AuthorConstructor()
         author.setName(f'Name {random.randint(100,999)}')

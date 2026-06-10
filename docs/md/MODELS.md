@@ -9,7 +9,7 @@ Basic models that are used in teleview library
 - `name`: _str_ 
 - `picture`: [_Media_](./MODELS.md#Media) | _bool_ 
 - `description`: _str_ | _bool_ 
-- `subscribers`: _str_ 
+- `subscribers`: _int_ 
 - `_iternal`: _dict_ — Any optional data that provider returned
 ## Channel.getPost
 > Async function to get channel's post by query
@@ -39,7 +39,7 @@ _async_  `Channel.toDict()` → `dict`
 > Represents post's comment
 ## Fields
 - `channel`: [_Channel_](./MODELS.md#Channel) 
-- `author`: [_Author_](./MODELS.md#Author) 
+- `author`: [_Channel_](./MODELS.md#Channel) | [_Author_](./MODELS.md#Author) 
 - `id`: _str_ | _int_ | _False_ 
 - `url`: _str_ | _False_ 
 - `text`: _str_ | _False_ 

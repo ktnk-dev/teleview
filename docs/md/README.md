@@ -1,7 +1,7 @@
 
 # Teleview Docs
-- Version: `3.0`
-- Generated at: `2026-06-10T15:16:12.204102`
+- Version: `3.2`
+- Generated at: `2026-06-10T23:38:12.673245`
 
 ### [Calls](./CALLS.md)
 ### [Models](./MODELS.md)

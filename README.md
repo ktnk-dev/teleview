@@ -2,7 +2,7 @@
 
 # About *Teleview*
 - Async Python library to get channels, posts and comments
-- Version: `release`/`3.1` 
+- Version: `release`/`3.2`
 - Providers: `telegram` (by default)
 - Dependencies: `aiohttp`, `bs4`
 

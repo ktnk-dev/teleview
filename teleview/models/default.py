@@ -59,7 +59,7 @@ class Author:
     async def toDict(self) -> dict:
         return {
             'name': self.name,
-            'picture': (await self.picture.toDict()) if self.picture else False
+            'picture': (await self.picture.toDict()) if self.picture else False  # pyright: ignore[reportAttributeAccessIssue]
         }
 
 
@@ -83,7 +83,7 @@ class Channel:
     """Channel's picture"""
     
     description: str | bool
-    subscribers: str
+    subscribers: int
     _iternal: dict
     """Any optional data that provider returned"""
     
@@ -107,7 +107,7 @@ class Channel:
         if _s.PostOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
-        constructor = await getProvider().getPost(self, query)
+        constructor = await getProvider().getPost(self, query) # pyright: ignore[reportAttributeAccessIssue]
         return constructor.build()
 
 
@@ -123,7 +123,7 @@ class Channel:
             raise NotSupported()
 
         found = 0
-        async for constructor in getProvider().getPosts(self):
+        async for constructor in getProvider().getPosts(self): # pyright: ignore[reportAttributeAccessIssue]
             found += 1
             yield constructor.build()
             if limit and found >= limit: break
@@ -135,7 +135,7 @@ class Channel:
             'id': self.id,
             'url': self.url,
             'name': self.name,
-            'picture': (await self.picture.toDict()) if self.picture else False,
+            'picture': (await self.picture.toDict()) if self.picture else False, # pyright: ignore[reportAttributeAccessIssue]
             'description': self.description,
             'subscribers': self.subscribers
         }
@@ -153,7 +153,7 @@ class Post:
     __slots__ = ['channel', 'author', 'id', 'url', 'text', 'views', 'media', 'datetime', '_iternal']
     
     channel: Channel    
-    author: Author
+    author: Channel | Author
     id: str | int | bool 
     url: str | bool 
     text: str | bool
@@ -186,7 +186,7 @@ class Post:
         if _s.CommentOutput not in getProvider().SUPPORTED:
             raise NotSupported()
 
-        constructor = await getProvider().getComment(self, query)
+        constructor = await getProvider().getComment(self, query) # pyright: ignore[reportAttributeAccessIssue]
         return constructor.build()
 
 
@@ -202,7 +202,7 @@ class Post:
             raise NotSupported()
 
         found = 0
-        async for constructor in getProvider().getComments(self):
+        async for constructor in getProvider().getComments(self): # pyright: ignore[reportAttributeAccessIssue]
             found += 1
             yield constructor.build()
             if limit and found >= limit: break

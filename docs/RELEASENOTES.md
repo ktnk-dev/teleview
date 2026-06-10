@@ -1,3 +1,6 @@
+# 3.2
+Small type annotation fixes. Fixed typo in `demo` provider
+
 # 3.1 
 There are no changes in calls and models
 

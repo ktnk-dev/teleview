@@ -1,5 +1,5 @@
 # First steps in Teleview
-This file was NOT generated. Teleview version - `3.0`
+This file was NOT generated. Teleview version - `3.2`
 
 This is fully async library, so you should create new async function to run library
  

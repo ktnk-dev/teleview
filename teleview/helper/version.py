@@ -1,1 +1,1 @@
-VERSION: float = 3.1
+VERSION: float = 3.2
