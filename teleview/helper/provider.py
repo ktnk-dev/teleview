@@ -3,11 +3,11 @@ from types import ModuleType
 from typing import AsyncGenerator
 from .. import exceptions
 from . import enums
+from .version import VERSION
+from ..docs import CallDocumentation
 
 HEADERS: dict = {}
 PROVIDER = False
-VERSION: float = 3.0
-
 
 class BaseProvider:
     REQUIRED_TELEVIEW_VERSION: float
@@ -40,7 +40,12 @@ class BaseProvider:
 #         ...
 
 
-
+@CallDocumentation(
+    'teleview', [],
+    exceptions=[exceptions.ProvderNotSupported],
+    args={'module': 'This call excepts <b>module</b> instead class'},
+    index=-100
+)
 def setProvider(module: ModuleType) -> None:
     """Set provider from provided module"""
     global PROVIDER
@@ -58,6 +63,11 @@ def setProvider(module: ModuleType) -> None:
 def getProvider() -> BaseProvider:
     return PROVIDER
 
+@CallDocumentation(
+    'teleview', [],
+    exceptions=[],
+    index=-100
+)
 def setHeaders(headers: dict) -> None:
     """Set headers that will pass to requests"""
     global HEADERS

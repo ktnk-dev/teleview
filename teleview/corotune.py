@@ -5,25 +5,17 @@ from typing import AsyncGenerator
 # Helper
 from .helper.provider import getProvider
 from .helper.enums import Supported as _s
-
+from .docs import CallDocumentation as _d
 # Exceptions
 from . import exceptions
 
+@_d(
+    'teleview', ['StreamChannelOutput'],
+    args={'limit': 'Amount of channels to find, set to 0 to get all channels'},
+    exceptions=[exceptions.NotSupported],index=0
+)
 async def getChannels(query: str | int, limit: int = 0) -> AsyncGenerator[default.Channel, None]:
-    """### Async function to search channels
-
-Args:
-* `query` [str | int]: something, that can be used to find your channel, depends on your provider
-* `limit` [int >= 0]: channels output limit
-
-Return: `Generator[Channel]`
-
-Exceptions:
-* `ChannelNotFound`
-* `NotSupported`
-
-"""
-    print(_s.StreamChannelOutput in getProvider().SUPPORTED)
+    """Async function to get multiple channels by query"""
     if _s.StreamChannelOutput not in getProvider().SUPPORTED:
         raise exceptions.NotSupported()
 
@@ -33,119 +25,47 @@ Exceptions:
         yield constructor.build()
         if limit and found >= limit: break
 
-
+@_d('teleview', [], exceptions=[exceptions.ChannelNotFound], index=1)
 async def getChannel(query: str | int) -> default.Channel:
-    """### Async function to get channel
-
-Args:
-* `query` [str | int]: something, that can be used to find your channel, depends on your provider
-
-Return: `Channel`
-
-Exceptions:
-* `ChannelNotFound`
-
-"""
+    """Async function to get single channel by query"""
     constructor = await getProvider().getChannel(query)
     return constructor.build()
 
-
+@_d(
+    'teleview', [],
+    alias='Channel.getPosts',
+    index=2
+)
 async def getPosts(channel: default.Channel, limit: int = 20) -> AsyncGenerator[default.Post, None]:
-    """### Async function to get post
-
-Args:
-* `channel` [Channel]
-* `limit` [int >= 0] = 20
-
-Return: `AsyncGenerator[Post]`
-
-Exceptions:
-* `PostNotFound`
-* `NotSupported`
-
-"""
-    if _s.StreamPostOutput not in getProvider().SUPPORTED:
-        raise exceptions.NotSupported()
-
-    found = 0
-    async for constructor in getProvider().getPosts(channel):
-        found += 1
-        yield constructor.build()
-        if limit and found >= limit: break
+    """Alias to `Channel.getPosts`"""
+    async for data in channel.getPosts(limit): yield data
 
 
-
-
-
+@_d(
+    'teleview', [],
+    alias='Channel.getPost',
+    index=3
+)
 async def getPost(channel: default.Channel, query: str | int) -> default.Post:
-    """### Async function to get post
+    """Alias to `Channel.getPost`"""
+    return await channel.getPost(query)
 
-Args:
-* `channel` [Channel]
-* `query` [str | int]: something, that can be used to find your post, depends on your provider
-
-Return: `Post`
-
-Exceptions:
-* `PostNotFound`
-* `NotSupported`
-
-"""
-    if _s.PostOutput not in getProvider().SUPPORTED:
-        raise exceptions.NotSupported()
-
-    constructor = await getProvider().getPost(channel, query)
-    return constructor.build()
-
-
-
+@_d(
+    'teleview', [],
+    alias='Post.getComments',
+    index=4
+)
 async def getComments(post: default.Post, limit: int = 20) -> AsyncGenerator[default.Comment, None]:
-    """### Async function to get comments
-
-Args:
-* `post` [Post]
-* `limit` [int >= 0] = 20
-
-Return: `AsyncGenerator[Comment]`
-
-Exceptions:
-* `CommentNotFound`
-* `NotSupported`
-
-"""
-    if _s.StreamCommentOutput not in getProvider().SUPPORTED:
-        raise exceptions.NotSupported()
-
-    found = 0
-    async for constructor in getProvider().getComments(post):
-        found += 1
-        yield constructor.build()
-        if limit and found >= limit: break
+    """Alias to `Post.getComments`"""
+    async for data in post.getComments(limit): yield data
 
 
-
-
-
-
-
+@_d(
+    'teleview', [],
+    alias='Post.getComment',
+    index=5
+)
 async def getComment(post: default.Post, query: str | int) -> default.Comment:
-    """### Async function to get comment
-
-Args:
-* `post` [Post]
-* `query` [str | int]: something, that can be used to find your comment, depends on your provider
-
-Return: `Comment`
-
-Exceptions:
-* `CommentNotFound`
-* `NotSupported`
-
-"""
-    if _s.CommentOutput not in getProvider().SUPPORTED:
-        raise exceptions.NotSupported()
-
-    constructor = await getProvider().getComment(post, query)
-    return constructor.build()
-
+    """Alias to `Post.getComment`"""
+    return await post.getComment(query)
 

@@ -6,3 +6,4 @@ dist
 teleview.egg-info
 .VSCodeCounter
 uv.lock
+docs/web/symbols.json
