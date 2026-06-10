@@ -166,9 +166,10 @@ def build_md(path: str):
 - Generated at: `{_DB['metadata']['build_at']}`
 
 ### [Calls](./CALLS.md)
-### Models
-### Exceptions
-### Type hints
+### [Models](./MODELS.md)
+### [First steps](./INTRO.md)
+### [Exceptions](./EXCEPTIONS.md)
+### [Type hints](./TYPE_HINTS.md)
 ### [Creating provider ↗](../../teleview/provider/demo.py)
 ''')
     
