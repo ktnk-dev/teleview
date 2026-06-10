@@ -1,12 +1,10 @@
+ [Release notes](./docs/RELEASENOTES.md) | [Documentation](./docs/md/README.md) | [Installation](./docs/INSTALLATION.md) `WIP`
+
 # About *Teleview*
 - Async Python library to get channels, posts and comments
-- Version: `release`/`3.0` 
+- Version: `release`/`3.1` 
 - Providers: `telegram` (by default)
 - Dependencies: `aiohttp`, `bs4`
-
-# Resources
-- Documentation `TBD`
-- [Release notes](./RELEASENOTES.md)
 
 # What are *providers*
 - Providers allow to get info from different social networks using only *Teleview* package!
@@ -20,4 +18,4 @@
 
 # TODO
 - [*telegram*] Get media from comments
-- [*lib*] `TGstat` and `VK` providers
+- [*teleview*] `TGstat` and `VK` providers

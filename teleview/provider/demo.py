@@ -220,7 +220,7 @@ class Provider(BaseProvider):
     @staticmethod #! CommentOutput required in SUPPORTED
     async def getComment(post: Post, query: str | int) -> CommentConstructor:
         #? For example query: int (comment id)
-        if type(query) != int: raise PostNotFound()
+        if type(query) != int: raise CommentNotFound()
 
         if random.random() < 0.05: raise CommentNotFound()
 

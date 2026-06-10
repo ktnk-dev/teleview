@@ -5,11 +5,17 @@ from typing import Any
 from .caching import CacheBuffer as _cb
 from .enums import CacheStrategy as _cs
 from .provider import getProvider as _pb
+from ..docs import CallDocumentation as _c
 
 _PROXY_URL = None
 
-def setProxy(proxy_url: str | None):
-    """### Set `http` proxy for all requests
+@_c(
+    'teleview', [],
+    exceptions=[],
+    index=-100
+)
+def setProxy(proxy_url: str | None) -> None:
+    """Set `http` or `socks` proxy for all requests.
     Format: `http://user:password@proxy_host:port`
     """
     global _PROXY_URL
